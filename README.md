@@ -1,24 +1,49 @@
-Сайт для запросов к нейросети GigaChat от Sber 
+# ИИ-помощник на основе GigaChat
 
-![alt text](image.png)
+![Project Preview](image.png)
 
+Сервис ИИ-помощник на основе Gigachat, который позволяет взаимодействовать со справочным материалом по машиностроительному оборудованию, задавать вопросы по материалу и получать качественные ответы.
 
-pip install supabase requests
+## Основные возможности
 
-pip install PyPDF2
+- **Интеллектуальная обработка документов** - загрузка и анализ PDF-файлов
+- **Контекстные ответы** - получение точных ответов на основе загруженных материалов
+- **Простое взаимодействие** - удобный интерфейс для общения с ИИ-помощником
+- **Поддержка различных форматов** - работа с PDF
 
-pip install gigachat
+## Технологический стек
 
-pip install supabase
+### Backend
+- **Python** с Flask framework-ом
+- **GigaChat API** - интеграция с нейросетью от Сбера
+- **Supabase** - облачная база данных
+- **PyPDF2** - обработка PDF-файлов
 
-pip install pdf2docx
+### Frontend
+- **Vue** с современным UI
+- **Flask** - кросс-доменные запросы
 
-pip install flask
+## Установка и настройка
 
-pip install flask_cors 
+### Предварительные требования
+- Python 3.13+
+- Node.js
+- Аккаунт Supabase
+- Токен GigaChat
 
-Таблица для БД:
+### Установка зависимостей:
 
+```bash
+# Backend зависимости
+pip install supabase, requests, PyPDF2, gigachat, pdf2docx, flask, flask_cors
+
+# Frontend зависимости
+cd Sber/Frontend
+npm install
+```
+### Таблица для БД:
+
+```sql
 CREATE TABLE pdf_files (
     id BIGSERIAL PRIMARY KEY,
     name TEXT NOT NULL,
@@ -32,10 +57,15 @@ CREATE TABLE pdf_files (
 );
 
 ALTER TABLE pdf_files DISABLE ROW LEVEL SECURITY;
+```
+### Запуск сервера:
 
+```bash
+cd Sber/Backend/server
+py server.py
+```
+### Запуск клиента:
 
-Запуск сайта: AI_GigaChat\Sber\Frontend> npm run dev
-запуск сервера: AI_GigaChat\Sber\Backend\server> py server.py 
-
-В файле сервера нужно указать свой токен!
-
+```bash
+cd Sber/Frontend
+npm run dev
