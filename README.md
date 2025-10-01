@@ -69,3 +69,7 @@ py server.py
 ```bash
 cd Sber/Frontend
 npm run dev
+```
+Перед запуском убедитесь, что:
+Указаны корректные учетные данные Supabase
+Установлен действительный токен GigaChat
