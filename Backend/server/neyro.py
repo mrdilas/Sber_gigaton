@@ -66,12 +66,14 @@ class GigaChatManager:
         result = self.giga.chat({
             "messages": [
                 {
-                    "role": "user",
+                    "role": "assistant",
                     "content": prompt,
                     "attachments": [material_id],
+                    
                 }
             ],
-            "temperature": 0.7
+            "temperature": 0.7,
+            "max_token": 1000
         })
         return result
     

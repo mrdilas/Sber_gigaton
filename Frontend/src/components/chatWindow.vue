@@ -145,7 +145,7 @@ export default {
                 // Подготавливаем данные для отправки
                 const requestData = {
                     message: userMessageText,
-                    selected_file_id: this.selectedFileId
+                    file_id: this.selectedFileId
                 };
 
                 console.log('Отправляем запрос на сервер:', requestData);

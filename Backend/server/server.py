@@ -83,17 +83,31 @@ def chat_with_ai():
         
         if file_id:
             try:
-                response = supabase.table('file_data').select('*').eq('id', file_id).execute()
+                # Пробуем разные названия таблиц
+                tables_to_try = ['file_data']
                 
-                if response.data:
-                    file_info = response.data[0]
-                    gigachat_file_id = file_info.get('gigachat_file_id')
-                    file_name = file_info.get('name')
-                    print(f"📄 Найден файл: {file_name}, GigaChat ID: {gigachat_file_id}")
-                else:
-                    print(f"⚠️ Файл с ID {file_id} не найден в базе")
+                for table_name in tables_to_try:
+                    try:
+                        response = supabase.table(table_name).select('*').eq('id', file_id).execute()
+                        
+                        if response.data:
+                            file_info = response.data[0]
+                            gigachat_file_id = file_info.get('gigachat_file_id')
+                            file_name = file_info.get('name')
+                            print(file_id, file_info, file_name)
+                            print(f"✅ Найден файл в таблице {table_name}: {file_name}, GigaChat ID: {gigachat_file_id}")
+                            break
+                        else:
+                            print(f"⚠️ Файл с ID {file_id} не найден в таблице {table_name}")
+                    except Exception as e:
+                        print(f"⚠️ Ошибка поиска в таблице {table_name}: {e}")
+                        continue
+                
+                if not gigachat_file_id:
+                    print(f"❌ Файл с ID {file_id} не найден ни в одной таблице")
+                    
             except Exception as e:
-                print(f"⚠️ Ошибка поиска файла в базе: {e}")
+                print(f"⚠️ Общая ошибка поиска файла в базе: {e}")
 
         # Отправляем запрос в GigaChat
         start_time = time.time()
