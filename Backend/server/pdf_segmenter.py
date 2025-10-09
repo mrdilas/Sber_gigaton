@@ -276,25 +276,3 @@ def save_result_to_txt(result_text: str, output_path: str) -> None:
         f.write(result_text)
     
     print(f"✅ Файл успешно сохранен: {output_path}")
-
-# Пример использования
-if __name__ == "__main__":
-    try:
-        # Обрабатываем PDF файл
-        pdf_path = "C:/Users/Mikhail/Downloads/4293850664.pdf"  # Укажите путь к вашему PDF файлу
-        
-        print("=" * 60)
-        print("🛠️  PDF to TXT Converter")
-        print("=" * 60)
-        
-        result = process_pdf_to_txt(pdf_path)
-        
-        # Сохраняем в файл
-        output_file = "output.txt"
-        save_result_to_txt(result, output_file)
-        
-        print(f"\n📁 Итоговый размер файла: {len(result)} символов")
-        print("🎯 Обработка завершена!")
-        
-    except Exception as e:
-        print(f"\n💥 Критическая ошибка: {e}")
