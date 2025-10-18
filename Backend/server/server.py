@@ -13,8 +13,8 @@ CORS(app)
 
 # Конфигурация
 API_TOKEN = 'MDE5OWM5OGUtMDI3MC03ZGM4LWIyMjItODMyMjE3YjllZjFlOjEzMmUzZTg5LTU2ZTgtNDA2NS1hZmFhLTcwM2FmZTRjMzA2Ng=='
-SUPABASE_URL = 'https://bppgahmqwuduiadqmbbr.supabase.co'
-SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJwcGdhaG1xd3VkdWlhZHFtYmJyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTE5NDc4NywiZXhwIjoyMDc0NzcwNzg3fQ.3ivMQF3kVj4uP94SwEcnWuM0swAawnVCZmn8QbKJqnQ'
+SUPABASE_URL = 'https://guwpfrhmzgflqwetkkos.supabase.co'
+SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd1d3BmcmhtemdmbHF3ZXRra29zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2Mzc3ODYsImV4cCI6MjA3NjIxMzc4Nn0.2Ak_MBIDbL-PFXqX0HoGKH8a1qKxeYtRPTez0YUpMuU'
 
 # Инициализация клиентов
 giga_manager = GigaChatManager(API_TOKEN)
@@ -83,9 +83,17 @@ def chat_with_ai():
         
         if file_id:
             try:
+                response = supabase.table('file_data').select('*').eq('id', file_id).execute()
                 # Пробуем разные названия таблиц
                 tables_to_try = ['file_data']
                 
+                if response.data:
+                    file_info = response.data[0]
+                    gigachat_file_id = file_info.get('gigachat_file_id')
+                    file_name = file_info.get('name')
+                    print(f"📄 Найден файл: {file_name}, GigaChat ID: {gigachat_file_id}")
+                else:
+                    print(f"⚠️ Файл с ID {file_id} не найден в базе")
                 for table_name in tables_to_try:
                     try:
                         response = supabase.table(table_name).select('*').eq('id', file_id).execute()
@@ -107,6 +115,7 @@ def chat_with_ai():
                     print(f"❌ Файл с ID {file_id} не найден ни в одной таблице")
                     
             except Exception as e:
+                print(f"⚠️ Ошибка поиска файла в базе: {e}")
                 print(f"⚠️ Общая ошибка поиска файла в базе: {e}")
 
         # Отправляем запрос в GigaChat
@@ -119,7 +128,37 @@ def chat_with_ai():
             else:
                 print("🚀 Отправка общего запроса к GigaChat...")
                 result = giga_manager.giga.chat({
-                    "messages": [{"role": "user", "content": user_message}],
+                    "messages": [{"role": "user", "content": f"""Ты эксперт в сфере гражданских прав и свобод, "
+                    "а также хорошо знакомы законы, кодексы и подзаконные акты РФ. Тебе необходимо сформулировать ответ на"
+                    "вопрос пользователя, основанный на документах, действующих на территории РФ. Вот вопрос пользователя:"
+                     + {user_message} + "."
+                     "Ответ необходимо сформулировать граммотно, а также указать в виде списка, на каких документах (законах)"
+                     "РФ основан ответ/консультация.
+
+Ответь технически грамотно в таком формате:
+## Консультация по вашему вопросу
+Здесь должна быть описана ваша ситуация, грамотно с юридической точки зрения
+Пример структуры ответа
+### Законы, являющиеся основаниями ответственности
+1. K1-ый кодекс РФ - тут должны быть перечисленны связи с нашим вопросом
+> Cтатья 1 - её описание, основанное на вопросе вопроса пользователя
+...
+> Cтатья n - её описание, основанное на вопросе вопроса пользователя
+2. K2-ый кодекс РФ - тут должны быть перечисленны связи с нашим вопросом
+> Cтатья 1 - её описание, основанное на вопросе вопроса пользователя
+...
+> Cтатья j - её описание, основанное на вопросе вопроса пользователя
+...
+m. Km-ый кодекс РФ - тут должны быть перечисленны связи с нашим вопросом
+> Cтатья 1 - её описание, основанное на вопросе вопроса пользователя
+...
+> Cтатья p - её описание, основанное на вопросе вопроса пользователя
+### Ваши действия (потенциально возможные)
+1. Действие 1
+2. Действие 2
+3. Действие 3
+
+В конце должно быть написано Данный ответ сгенерирован нейросетью и не призывает Вас действовать, основываясь на данных рекомендациях."""}],
                     "temperature": 0.1
                 })
 
@@ -130,7 +169,7 @@ def chat_with_ai():
                 ai_response = result.message.content
             else:
                 ai_response = "Не удалось получить ответ от нейросети"
-
+            print(giga_manager.get_balance())
         except Exception as e:
             print(f"❌ Ошибка GigaChat: {e}")
             return jsonify({'error': f'Ошибка нейросети: {str(e)}'}), 500
@@ -340,5 +379,6 @@ if __name__ == '__main__':
     print("  DELETE /api/pdf/delete/<id> - Удаление файла")
     print("  GET  /api/health         - Проверка здоровья")
     print("=" * 60)
-    
+    print(giga_manager.get_balance())
+    #$giga_manager.delete_all_files()
     app.run(host='0.0.0.0', port=5000, debug=True)
