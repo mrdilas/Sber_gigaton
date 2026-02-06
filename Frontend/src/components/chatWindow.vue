@@ -114,7 +114,7 @@ export default {
             recordingTimer: null,
             microphoneIcon: microphoneIcon,
             recordingIcon: recordingIcon,
-            apiUrl: 'http://localhost:5000/chat' // URL вашего локального сервера
+            apiUrl: 'http://localhost:5000/api/chat' // URL вашего локального сервера
         }
     },
     
@@ -145,7 +145,7 @@ export default {
                 // Подготавливаем данные для отправки
                 const requestData = {
                     message: userMessageText,
-                    selected_file_id: this.selectedFileId
+                    file_id: this.selectedFileId
                 };
 
                 console.log('Отправляем запрос на сервер:', requestData);
